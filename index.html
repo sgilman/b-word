@@ -1,0 +1,159 @@
+<html>
+  <head>
+    <title>The B Word | MAS.S70</title>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+    <style>
+      body {
+        margin: 0;
+        padding: 3%;
+        font-family: 'PT Sans', sans-serif;
+      }
+      .page {
+        margin: 0 auto;
+        max-width: 800px;
+        width: 90%;
+      }
+      h1 {
+        font-weight: normal;
+        text-rendering: optimizeLegibility;
+      }
+    .chart rect {
+      fill: rgba(3, 168, 124, 0.8);
+    }
+
+    .chart text {
+      fill: white;
+      font: 10px sans-serif;
+      text-anchor: end;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+	  <p> In a <a href="https://www.wsj.com/articles/sheryl-sandberg-and-anna-maria-chavez-on-bossy-the-other-b-word-1394236848"2014">2014 <i>Washington Post</i> op-ed</a>, Sheryl Sandberg and Anna Maria Chavez call 'bossy'</p>
+      <h1>the other b-word.</h1>
+	  <p>Sandberg and Chavez claim that assertive boys are called words like "confident" and "leader", while assert girls are called "bossy". Language like this discourages girls from asserting themselves, and manifests later on in life in an unwillingness to take on leadership positions.</P>
+	  <p>To investigate "bossy" and other sexist terms in the media, I analyzed almost two million articles from <i>The Guardian</i> written between 2000 and 2017.</p>
+	  <p>First, I separated the articles in which the pronoun "he" was used from articles in which "she" was used, in an effort to measure 
+      <svg id="svg2">
+      </svg>
+      <p>
+        What happens when we change our data and put a large number (say 100)
+        in our data? Our bar chart fails!!
+        Can we make our chart smarter by using D3 to scale our axis?
+      </p>
+      <br />
+      <h2> Auto scale axis based on data </h2>
+      <svg id="svg3">
+      </svg>
+    </div>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script>
+      // Common Variables
+      var data = [{gender: 'male', pronoun: 'he', count: 1269529, bossies:1086},
+				  {gender: 'female', pronoun: 'she', count: 507761, bossies: 1003}
+				  ];
+
+      var width = 420;
+      var barHeight = 30;
+
+      // Simple bar chart
+	  var chart2 = d3.select("#svg2")
+					.attr("height", "100")
+					.attr("width", "420");
+	   var bar2 = chart2.selectAll("g")
+					.data(data)
+					.enter().append("g")
+					.attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")";});
+		bar2.append("rect")
+			.attr("width", function(d,i) { return (d.count/1973979.0) * width})
+			.attr("height", barHeight-10)
+			.style("fill", genderedColors);
+		bar2.append("rect")
+			.attr("x", function(d,i) { return (d.count/1973979.0) * width})
+			.attr("width", function(d,i) { return (1-(d.count/1973979.0)) * width})
+			.attr("height", barHeight-10)
+			.style("fill", "grey");
+
+	  
+		bar2.append("text")
+			.attr("x", function(d) { return d.count*10 + 3;})
+			.attr("y", barHeight/2)
+			.attr("dy", ".35em")
+			.text(function(d) { return d; });
+		
+		var total_articles  = 1973979.0;
+		var bossy_scale = 2;
+		var normalization = data[0].bossies/data[0].count;
+
+      // Chart with smart axis
+		var chart3 = d3.select("#svg3")
+			.attr("height", "100")
+			.attr("width", "420");
+
+
+/**		var he_she = chart3.selectAll("g")
+			.data(data)
+			.enter().append("g")
+			.attr("transform", function(d, i) { return "translate(0," + i *barHeight + ")";});
+/**		he_she.append("text")
+			.attr("y", barHeight/2)
+			.text(function (d, i) { return d.pronoun; })
+			.style("fill", "black"); **/
+
+		var bar3 = chart3.selectAll("g")
+			.data(data)
+			.enter().append("g")
+			.attr("transform", function(d, i) { return "translate(0," + i *barHeight + ")";});
+		bar3.append("text")
+			.attr("y", barHeight/2)
+			.text(function (d, i) { return d.pronoun + " is"; })
+			.style("fill", "black");
+		bar3.append("text")
+			.attr("y", barHeight/2)
+			.attr("x", 50)
+			.text(function(d, i) {
+				console.log(data[i].gender);
+				var t = '';
+				var number_bossies = (d.bossies/d.count)/normalization * bossy_scale;
+				var letters = ['','b','bo','bos','boss','bossy'];
+
+				for (bossies_left=number_bossies; bossies_left > 0; bossies_left--) {
+					if (Math.floor(bossies_left) === 0) {
+						console.log(number_bossies);
+						t += letters[Math.floor(number_bossies % 1 * 5)];
+						} else {t += 'bossy';}
+				};
+				return t;
+			})
+			.style("fill", genderedColors);
+		chart3.append("line")
+			.attr("x1", 0)
+			.attr("x2", 500)
+			.attr("y1", barHeight)
+			.attr("y2", barHeight)
+			.style("stroke", "black");
+		chart3.append("line")
+			.attr("x1", 45)
+			.attr("x2", 45)
+			.attr("y1", 0)
+			.attr("y2", barHeight * data.length)
+			.attr("stroke", "black");
+
+		function genderedColors(d,i) {
+				switch(d.gender) {
+					case 'male':
+						return "blue";
+						break;
+					case 'female':
+						return "pink";
+						break;
+					default:
+						return "green";
+						break;
+					}
+				}
+
+    </script>
+  </body>
+</html>
